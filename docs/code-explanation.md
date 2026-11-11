@@ -328,3 +328,9 @@ It is calculated from the marks, so saving it would store the same information t
 
 **Bonus: Why does the sort shift only strictly lower marks?**
 Equal marks are not moved past each other, so students with the same marks stay in the order they were added (a stable sort).
+
+## Vercel deployment path
+
+The localhost path remains the original Express-to-C setup described above. Vercel cannot rely on compiling/running that C executable at function startup or saving records to the function filesystem. Instead, `api/[...route].js` sends requests to `api/handler.js`, which validates inputs and executes parameterized queries with Neon Postgres. The shared `getGrade` and response mapping preserve the HTTP contract. `db/schema.sql` defines the persisted records and identity column used to keep insertion order for list, sort ties and statistics.
+
+`scripts/build.js` copies the static frontend into `dist/`; `vercel.json` selects it for static hosting and configures the API function. `tests/api-handler.test.js` runs the API handler with an in-memory SQL test double, so it does not need a real database. For Neon and Vercel setup, see [the deployment guide](deployment.md).

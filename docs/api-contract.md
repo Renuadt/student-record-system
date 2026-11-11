@@ -1,6 +1,6 @@
 # Student Record Management System: API Contract
 
-The C program exposes a command-line JSON interface. The Express server maps the browser's HTTP requests to that interface and serves the frontend.
+The C program exposes a command-line JSON interface. The localhost Express server maps browser requests to that interface. Vercel uses a separate serverless Node.js API backed by Neon Postgres; both HTTP implementations preserve the response shapes described here.
 
 For local setup and launch instructions, see [the project README](../README.md).
 
@@ -217,19 +217,23 @@ The program checks in this order and reports only the **first** problem:
 
 If `add`, `update` or `delete` reports `Could not save data...`, the change was **not** written to disk. Each command is a separate run of the program that reloads the file, so nothing half-done is kept between calls.
 
-## 6. HTTP API served by the local Node server
+## 6. HTTP API
 
-The Express server serves the frontend from `frontend/` and listens on `127.0.0.1` (port 3000 by default). It passes the C program's JSON through and maps `"ok"` to HTTP 200 and application errors to HTTP 400. A backend execution or output error returns HTTP 500. `GET /api/health` checks that the web server is running; it does not make a separate backend check.
+The local Express server serves the frontend from `frontend/`, listens on `127.0.0.1` (port 3000 by default), and invokes the C program from `backend-c/`. The Vercel deployment serves the same frontend as static assets and routes `/api/*` to a Node.js serverless function using Neon Postgres. It does not run the C executable or store deployed records on the function filesystem.
 
-| HTTP route | Runs |
-|---|---|
-| `GET /api/health` | Returns `{"status":"ok"}` when the web server is running |
-| `GET /api/students` | `student list` |
-| `GET /api/students/:roll` | `student search <roll>` |
-| `POST /api/students` body `{"roll":101,"name":"Ravi","marks":85}` | `student add 101 Ravi 85` |
-| `PUT /api/students/:roll` body `{"name":"Ravi","marks":90}` | `student update <roll> Ravi 90` |
-| `DELETE /api/students/:roll` | `student delete <roll>` |
-| `GET /api/sort` | `student sort` |
-| `GET /api/stats` | `student stats` |
+Both implementations return HTTP 200 for successful operations and HTTP 400 for application errors. The local server returns HTTP 500 if the C program cannot run. The Vercel API returns HTTP 503 when `DATABASE_URL` is missing and HTTP 500 when a database operation fails. `/api/health` checks the local server process in localhost mode; on Vercel it also queries the `students` table.
 
-The browser page loads its styles from `frontend/style.css` and behavior from `frontend/script.js`. API paths are relative to the same origin, so the page should be opened through the Node server rather than directly as a file.
+| HTTP route | Local implementation | Vercel implementation |
+|---|---|---|---|
+| `GET /api/health` | Returns `{"status":"ok"}` when Express is running | Returns `{"status":"ok"}` when `DATABASE_URL` and the schema are ready |
+| `GET /api/students` | `student list` | Selects students in insertion order |
+| `GET /api/students/:roll` | `student search <roll>` | Selects one student by roll |
+| `POST /api/students` body `{"roll":101,"name":"Ravi","marks":85}` | `student add 101 Ravi 85` | Inserts a student (rolls are serialized to enforce the 100-record limit) |
+| `PUT /api/students/:roll` body `{"name":"Ravi","marks":90}` | `student update 101 Ravi 90` | Updates the matching student |
+| `DELETE /api/students/:roll` | `student delete 101` | Deletes and returns the matching student |
+| `GET /api/sort` | `student sort` | Sorts marks descending; ties keep insertion order |
+| `GET /api/stats` | `student stats` | Returns count, average, highest and lowest records |
+
+The browser page loads its styles from `frontend/style.css` and behavior from `frontend/script.js`. API paths are relative to the same origin, so the page should be opened through the Node server or Vercel deployment rather than directly as a file. Local file records and Vercel database records are separate and are not synchronized.
+
+On Vercel, set `DATABASE_URL` to a Neon Postgres connection string and apply [`db/schema.sql`](../db/schema.sql) before using the API. Full setup steps are in [the deployment guide](deployment.md). The API currently has no authentication; do not expose sensitive records without adding access control.

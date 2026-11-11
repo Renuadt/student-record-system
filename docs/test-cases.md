@@ -1,6 +1,20 @@
 # 15 C Backend Terminal Test Cases
 
-These cases exercise the C backend directly. The web app's launch and HTTP checks are documented in the project [README](../README.md) and [API contract](api-contract.md).
+These cases exercise the C backend directly. The Vercel serverless API has separate automated tests; deployment and HTTP checks are documented in [the deployment guide](deployment.md).
+
+## Vercel API tests
+
+From the project root, run:
+
+```
+npm install
+npm test
+npm run build
+```
+
+The API tests use an in-memory SQL adapter and do not require a Neon account or alter student records. They cover health, CRUD, grades, validation, stable sorting, statistics and unsupported methods. The build test copies the browser assets into `dist/`, the static output configured in `vercel.json`.
+
+For a deployed smoke test, open `/api/health` on the Vercel deployment. It should return `{"status":"ok"}`. This also verifies that the `students` schema exists and the `DATABASE_URL` environment variable works.
 
 ## Setup
 
