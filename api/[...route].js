@@ -1,5 +1,5 @@
 const { neon } = require("@neondatabase/serverless");
-const { createApiHandler } = require("../server/api-handler");
+const { createApiHandler } = require("./handler");
 
 let handler;
 let configuredUrl;

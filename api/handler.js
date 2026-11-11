@@ -1,4 +1,4 @@
-const MAX_STUDENTS = 100; // Keep aligned with the C backend's record capacity.
+const MAX_STUDENTS = 100;
 const ADD_LOCK_ID = 41673021;
 
 function getGrade(marks) {

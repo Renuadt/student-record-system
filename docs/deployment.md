@@ -13,9 +13,9 @@ The app and C backend both allow up to 100 records. The Vercel API serializes in
 ## 2. Connect the GitHub repository to Vercel
 
 1. In Vercel, choose **Add New → Project** and import `Renuadt/student-record-system`.
-2. Set the project root to either the repository root or `server/`. The repository-root setting uses the root package and `vercel.json`; `server/` is also supported and uses its own package, API entry point and `vercel.json`. If Vercel previously installed the Express dependencies from `server/`, it was using `server/` as the root; the latest commit now provides a build script and Vercel configuration there too.
+2. Set the project root to the repository root. Leave the Framework Preset as **Other** unless Vercel detects Node.js automatically.
 3. Add `DATABASE_URL` as an environment variable for **Preview** and **Production**. Paste the Neon connection string directly in Vercel; never put it in source control or chat.
-4. Deploy. The selected root's `vercel.json` runs `npm run build`, publishes `dist/`, and routes `/api/*` to the serverless function. The build script copies `frontend/` from the repository into the selected root's `dist/`.
+4. Deploy. `vercel.json` runs `npm run build`, publishes `dist/`, and routes `/api/*` to the serverless function.
 5. Open `https://<your-deployment>/api/health`. A response of `{"status":"ok"}` confirms the database connection and schema are ready.
 
 If you add or change `DATABASE_URL` after deploying, redeploy so the function receives the new environment variable. Commits pushed to the connected GitHub branch trigger subsequent deployments.
@@ -36,12 +36,10 @@ The API tests use an in-memory SQL test double. They do not connect to Neon and 
 
 | Symptom | Check |
 |---|---|
-| `500 FUNCTION_INVOCATION_FAILED` | Review the Vercel function logs. Confirm the project root is the repository root or `server/`, then redeploy the latest commit so its matching API entry point and dependency manifest are included. |
+| `500 FUNCTION_INVOCATION_FAILED` | Review the Vercel function logs. Confirm the deployment includes `api/[...route].js` and the root `package.json` dependency installation completed. |
 | `503` with `DATABASE_URL is not configured` | Add `DATABASE_URL` to the Vercel project’s Preview and Production environment variables, then redeploy. |
 | `/api/health` returns `Database operation failed` | Run `db/schema.sql` in the Neon SQL Editor and verify the connection string belongs to the intended Neon database. |
-| `npm run build` reports a missing script | Confirm Vercel's project root is the repository root or `server/` and redeploy the latest commit. Both package manifests now define the build script. |
-| Static build cannot find frontend assets | Confirm Vercel's project root is the repository root or `server/`; the build script copies the root `frontend/` into that root's `dist/`. |
-| npm warns about unknown `cache-dir` configuration | This warning is from the npm environment configuration and is separate from the build-script failure. The project build does not use this setting. |
+| `npm run build` cannot find the frontend | Confirm the Vercel project root is the repository root; the build copies `frontend/` to `dist/`. |
 
 ## Access control and data
 

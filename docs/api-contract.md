@@ -219,7 +219,7 @@ If `add`, `update` or `delete` reports `Could not save data...`, the change was 
 
 ## 6. HTTP API
 
-The local Express server serves the frontend from `frontend/`, listens on `127.0.0.1` (port 3000 by default), and invokes the C program from `backend-c/`. Vercel supports either the repository root or `server/` as its project root. Both deployments serve the same frontend as static assets and route `/api/*` to a Node.js serverless function using Neon Postgres. It does not run the C executable or store deployed records on the function filesystem.
+The local Express server serves the frontend from `frontend/`, listens on `127.0.0.1` (port 3000 by default), and invokes the C program from `backend-c/`. The Vercel deployment serves the same frontend as static assets and routes `/api/*` to a Node.js serverless function using Neon Postgres. It does not run the C executable or store deployed records on the function filesystem.
 
 Both implementations return HTTP 200 for successful operations and HTTP 400 for application errors. The local server returns HTTP 500 if the C program cannot run. The Vercel API returns HTTP 503 when `DATABASE_URL` is missing and HTTP 500 when a database operation fails. `/api/health` checks the local server process in localhost mode; on Vercel it also queries the `students` table.
 

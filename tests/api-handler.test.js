@@ -1,8 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { createApiHandler } = require("../server/api-handler");
+const { createApiHandler } = require("../api/handler");
 const vercelHandler = require("../api/[...route]");
-const serverRootVercelHandler = require("../server/api/[...route]");
 
 function createFakeSql(initialRecords = []) {
   const records = initialRecords.map((record, index) => ({ ...record, id: index + 1 }));
@@ -197,17 +196,15 @@ test("enforces the 100-record capacity and prioritizes duplicate rolls", async (
 });
 
 test("reports missing Vercel database configuration without throwing", async () => {
-  for (const handler of [vercelHandler, serverRootVercelHandler]) {
-    const originalUrl = process.env.DATABASE_URL;
-    delete process.env.DATABASE_URL;
-    const response = createResponse();
-    try {
-      await handler({ method: "GET", url: "/api/health" }, response);
-    } finally {
-      if (originalUrl === undefined) delete process.env.DATABASE_URL;
-      else process.env.DATABASE_URL = originalUrl;
-    }
-    assert.equal(response.statusCode, 503);
-    assert.equal(response.body.message, "DATABASE_URL is not configured for this deployment");
+  const originalUrl = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL;
+  const response = createResponse();
+  try {
+    await vercelHandler({ method: "GET", url: "/api/health" }, response);
+  } finally {
+    if (originalUrl === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = originalUrl;
   }
+  assert.equal(response.statusCode, 503);
+  assert.equal(response.body.message, "DATABASE_URL is not configured for this deployment");
 });
