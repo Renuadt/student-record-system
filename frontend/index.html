@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>University Registry Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>University Registry</h1>
+    <div class="meta">
+      <div>Academic Marks Ledger</div>
+      <div>Max Capacity: 100 Records</div>
+    </div>
+  </header>
+
+  <div id="notice" class="notice" role="status" aria-live="polite" hidden>
+    <span id="notice-text"></span>
+    <button type="button" id="notice-close">Dismiss</button>
+  </div>
+
+  <section class="stats-strip" aria-label="Registry Statistics">
+    <div class="stat-unit">
+      <span class="stat-label">Count</span>
+      <span class="stat-num" id="st-count">0</span>
+      <span class="stat-sub">Enrolled records</span>
+    </div>
+    <div class="stat-unit">
+      <span class="stat-label">Average Marks</span>
+      <span class="stat-num" id="st-avg">—</span>
+      <span class="stat-sub">Cohort mean</span>
+    </div>
+    <div class="stat-unit">
+      <span class="stat-label">Highest Marks</span>
+      <span class="stat-num" id="st-high">—</span>
+      <span class="stat-sub" id="st-high-sub">No record</span>
+    </div>
+    <div class="stat-unit">
+      <span class="stat-label">Lowest Marks</span>
+      <span class="stat-num" id="st-low">—</span>
+      <span class="stat-sub" id="st-low-sub">No record</span>
+    </div>
+  </section>
+
+  <main class="workspace">
+    <aside>
+      <div class="panel-block">
+        <div class="panel-title">
+          <span id="form-heading">Enrol Student</span>
+          <span id="form-badge" class="mode-tag" hidden>Update Mode</span>
+        </div>
+        <form id="student-form" novalidate>
+          <div class="field">
+            <label for="in-roll">Roll Number (1–999999999)</label>
+            <input id="in-roll" name="roll" type="text" inputmode="numeric" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="in-name">Full Name (Letters &amp; spaces)</label>
+            <input id="in-name" name="name" type="text" maxlength="49" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="in-marks">Marks (0–100)</label>
+            <input id="in-marks" name="marks" type="number" min="0" max="100" required>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="primary" id="btn-save">Enrol Student</button>
+            <button type="button" id="btn-cancel" hidden>Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel-block">
+        <div class="panel-title"><span>Find By Roll No.</span></div>
+        <form id="search-form" novalidate>
+          <div class="field">
+            <label for="in-search">Roll Number</label>
+            <input id="in-search" name="search" type="text" inputmode="numeric" autocomplete="off" required>
+          </div>
+          <div class="btn-row">
+            <button type="submit" class="primary">Find Record</button>
+            <button type="button" id="btn-reset">Show All</button>
+          </div>
+        </form>
+      </div>
+    </aside>
+
+    <section>
+      <div class="ledger-bar">
+        <h2 class="ledger-title" id="view-heading">Records</h2>
+        <div class="btn-row">
+          <button type="button" id="btn-list">Order Added</button>
+          <button type="button" id="btn-sort">Sort By Marks</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Roll No.</th>
+              <th>Student Name</th>
+              <th>Marks</th>
+              <th>Grade</th>
+              <th class="col-act">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ledger-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

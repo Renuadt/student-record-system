@@ -1,0 +1,12 @@
+{
+  "name": "student-records",
+  "version": "1.0.0",
+  "description": "Express server + HTML frontend for the C student record program",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
