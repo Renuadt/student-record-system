@@ -1,7 +1,7 @@
 {
   "name": "student-records",
   "version": "1.0.0",
-  "description": "Local Express server for the C student record program",
+  "description": "Express server + HTML frontend for the C student record program",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
