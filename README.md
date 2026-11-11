@@ -39,9 +39,9 @@ The Vercel deployment uses serverless functions, so it does not compile or execu
 
 1. Create a Neon project and copy its connection string.
 2. In the Neon SQL Editor, run [`db/schema.sql`](db/schema.sql) once to create the `students` table.
-3. In Vercel, import `Renuadt/student-record-system` from GitHub. Use the repository root as the project root and the default Node.js runtime.
+3. In Vercel, import `Renuadt/student-record-system` from GitHub. Set the project root to the repository root or `server/` (both are supported) and use the default Node.js runtime. If the project was already configured to use `server/`, it can stay that way.
 4. Add `DATABASE_URL` to the Vercel project environment variables for Preview and Production. Use the Neon connection string; do not commit it or share it in chat.
-5. Deploy. The included [`vercel.json`](vercel.json) builds the static site into `dist/` and routes `/api/*` to a Node.js serverless function.
+5. Deploy. The selected root's `vercel.json` builds the static site into `dist/` and routes `/api/*` to a Node.js serverless function.
 6. Visit `/api/health` on the deployment to verify database connectivity. It returns `{"status":"ok"}` when the table and connection are ready.
 
 Subsequent pushes to the connected GitHub branch trigger Vercel deployments. If you add the environment variable after an initial deployment, redeploy so the function receives it.
@@ -61,7 +61,9 @@ Subsequent pushes to the connected GitHub branch trigger Vercel deployments. If 
 frontend/       HTML, CSS and browser JavaScript
 server/         Express server and npm dependencies
 backend-c/      C program and persistent student data
-api/            Vercel serverless API and shared route handler
+api/            Repository-root Vercel function entry point
+server/api/     Vercel function entry point when root is server/
+server/api-handler.js  Shared serverless route logic
 db/             Neon Postgres schema
 scripts/        Vercel static build script
 tests/          Serverless API tests

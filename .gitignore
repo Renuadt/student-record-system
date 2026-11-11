@@ -4,6 +4,7 @@ backend-c/student.exe
 backend-c/data/students.txt
 /node_modules/
 /dist/
+/server/dist/
 /.vercel/
 /.env
 /.env.*
